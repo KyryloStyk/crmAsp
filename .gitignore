@@ -1,0 +1,45 @@
+# Build results
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Rider / Visual Studio / VS Code
+.vs/
+.vscode/
+*.csproj.user
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Publish output
+publish/
+
+# .NET artifacts
+*.dll
+*.exe
+*.pdb
+
+# NuGet packages
+*.nupkg
+*.snupkg
+packages/
+**/packages/*
+
+# EF Core
+Migrations/*Designer.cs
+
+# Secrets
+appsettings.*.json
+!appsettings.json
+
+# Optional: local config
+local.settings.json
