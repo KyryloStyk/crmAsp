@@ -1,15 +1,10 @@
 public class ClientService
 {
-    private readonly List<Client> _clients = new List<Client>();
+    private readonly List<Client> _clients = new();
 
-    public IEnumerable<Client> GetAllClients()
+    public IEnumerable<Client> GetAll()
     {
         return _clients;
-    }
-
-    public int GenerateId()
-    {
-        return _clients.Count > 0 ? _clients.Max(c => c.Id) + 1 : 1;
     }
 
     public Client? GetById(int id)
@@ -17,28 +12,29 @@ public class ClientService
         return _clients.FirstOrDefault(c => c.Id == id);
     }
 
-    public Client Add(CreateClientDto dto)
-{
-    var client = new Client
+    public Client Create(CreateClientDto dto)
     {
-        Id = GenerateId(),
-        Name = dto.Name,
-        Email = $"{dto.Name.ToLower()}@example.com"
-    };
+        var client = new Client
+        {
+            Id = GenerateId(),
+            Name = dto.Name
+        };
 
-    _clients.Add(client);
+        _clients.Add(client);
+        return client;
+    }
 
-    return client;
-}
+    public bool Delete(int id)
+    {
+        var client = GetById(id);
+        if (client == null) return false;
 
-    public bool DeleteClient(int id)
-{
-    var client = GetById(id);
-    if (client == null)
-        return false;
+        _clients.Remove(client);
+        return true;
+    }
 
-    _clients.Remove(client);
-    return true;
-}
-
+    private int GenerateId()
+    {
+        return _clients.Count == 0 ? 1 : _clients.Max(c => c.Id) + 1;
+    }
 }
