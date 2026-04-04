@@ -1,40 +1,73 @@
 public class ClientService
 {
-    private readonly List<Client> _clients = new();
+    private readonly AppDbContext _context;
+
+    public ClientService(AppDbContext context)
+    {
+        _context = context;
+    }
 
     public IEnumerable<Client> GetAll()
     {
-        return _clients;
+        return _context.Clients.ToList();
     }
 
     public Client? GetById(int id)
     {
-        return _clients.FirstOrDefault(c => c.Id == id);
+        return _context.Clients.Find(id);
+    }
+
+    public void AddClient(Client client)
+    {
+        _context.Clients.Add(client);
+        _context.SaveChanges();
+    }
+
+    public void DeleteClient(int id)
+    {
+        var client = _context.Clients.Find(id);
+        if (client != null)
+        {
+            _context.Clients.Remove(client);
+            _context.SaveChanges();
+        }
     }
 
     public Client Create(CreateClientDto dto)
+{
+    var client = new Client
     {
-        var client = new Client
-        {
-            Id = GenerateId(),
-            Name = dto.Name
-        };
+        Name = dto.Name
+    };
 
-        _clients.Add(client);
-        return client;
-    }
+    _context.Clients.Add(client);
+    _context.SaveChanges();
 
-    public bool Delete(int id)
-    {
-        var client = GetById(id);
-        if (client == null) return false;
+    return client;
+}
 
-        _clients.Remove(client);
-        return true;
-    }
+public void UpdateClient(int id, CreateClientDto dto)
+{
+    var client = _context.Clients.FirstOrDefault(c => c.Id == id);
 
-    private int GenerateId()
-    {
-        return _clients.Count == 0 ? 1 : _clients.Max(c => c.Id) + 1;
-    }
+    if (client == null)
+        return;
+
+    client.Name = dto.Name;
+
+    _context.SaveChanges();
+}
+
+public bool Delete(int id)
+{
+    var client = _context.Clients.FirstOrDefault(c => c.Id == id);
+
+    if (client == null)
+        return false;
+
+    _context.Clients.Remove(client);
+    _context.SaveChanges();
+
+    return true;
+}
 }

@@ -4,5 +4,5 @@ public class CreateClientDto
 {
     [Required]
     [MinLength(2)]
-    public string Name { get; set; }
+    public required string Name { get; set; }
 }

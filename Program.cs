@@ -1,15 +1,33 @@
+using Microsoft.EntityFrameworkCore;
+using FluentValidation;
+using FluentValidation.AspNetCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Регистрируем сервисы
 builder.Services.AddControllers();
-builder.Services.AddSingleton<ClientService>();
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateClientDtoValidator>();
+
+// ✅ EF
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlite("Data Source=app.db"));
+
+// ✅ сервис теперь Scoped
+builder.Services.AddScoped<ClientService>();
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+
+builder.Services.AddAutoMapper(typeof(Program));
 
 var app = builder.Build();
 
-// Middleware
+app.UseSwagger();
+app.UseSwaggerUI();
+
 app.UseHttpsRedirection();
 
-// 👇 ВАЖНО — подключаем контроллеры
 app.MapControllers();
 
 app.Run();

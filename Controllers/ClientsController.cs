@@ -62,6 +62,19 @@ public ActionResult<ClientDto> Create([FromBody] CreateClientDto dto)
     return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
 }
 
+[HttpPut("{id}")]
+public ActionResult UpdateClient(int id, [FromBody] CreateClientDto dto)
+{
+    var existing = _clientService.GetById(id);
+
+    if (existing == null)
+        return NotFound();
+
+    _clientService.UpdateClient(id, dto);
+
+    return NoContent();
+}
+
     [HttpDelete("{id}")]
 public ActionResult Delete(int id)
 {
