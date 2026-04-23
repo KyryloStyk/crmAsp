@@ -1,5 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
+using api.DTOs.Order;
+
+namespace api.DTOs.Order;
 
 [ApiController]
 [Route("api/[controller]")]

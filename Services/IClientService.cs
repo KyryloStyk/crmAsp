@@ -1,3 +1,4 @@
+using api.DTOs.Client;
 public interface IClientService
 {
     Task<IEnumerable<Client>> GetAllAsync();

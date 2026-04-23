@@ -1,3 +1,5 @@
+namespace api.DTOs.Order;
+
 public class OrderDto
 {
     public int Id { get; set; }

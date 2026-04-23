@@ -1,5 +1,4 @@
 namespace api.Controllers;
-namespace api.DTOs.Client;
 
 using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
