@@ -1,16 +1,22 @@
 namespace api.Controllers;
+namespace api.DTOs.Client;
 
 using Microsoft.AspNetCore.Mvc;
+using AutoMapper;
+using api.DTOs.Client;
+using api.DTOs.Order;
 [ApiController]
 [Route("api/[controller]")]
 public class ClientsController : ControllerBase
 {
     private readonly IClientService _clientService;
+    private readonly IMapper _mapper;
 
-    public ClientsController(IClientService clientService)
-    {
-        _clientService = clientService;
-    }
+    public ClientsController(IClientService clientService, IMapper mapper)
+{
+    _clientService = clientService;
+    _mapper = mapper;
+}
 
     [HttpGet("test")]
     public string Test()
@@ -23,11 +29,7 @@ public async Task<ActionResult<IEnumerable<ClientDto>>> GetAll()
 {
     var clients = await _clientService.GetAllAsync();
 
-    var result = clients.Select(c => new ClientDto
-    {
-        Id = c.Id,
-        Name = c.Name
-    });
+    var result = _mapper.Map<IEnumerable<ClientDto>>(clients);
 
     return Ok(result);
 }
@@ -40,11 +42,7 @@ public async Task<ActionResult<ClientDto>> GetById(int id)
     if (client == null)
         return NotFound();
 
-    return Ok(new ClientDto
-    {
-        Id = client.Id,
-        Name = client.Name
-    });
+    return Ok(_mapper.Map<ClientDto>(client));
 }
 
 [HttpPost]
@@ -52,11 +50,7 @@ public async Task<ActionResult<ClientDto>> Create(CreateClientDto dto)
 {
     var client = await _clientService.CreateAsync(dto);
 
-    var result = new ClientDto
-    {
-        Id = client.Id,
-        Name = client.Name
-    };
+    var result = _mapper.Map<ClientDto>(client);
 
     return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
 }

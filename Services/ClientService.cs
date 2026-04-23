@@ -1,62 +1,74 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 
 public class ClientService : IClientService
 {
+    private readonly ILogger<ClientService> _logger;
     private readonly AppDbContext _context;
 
-    public ClientService(AppDbContext context)
+    public ClientService(AppDbContext context, ILogger<ClientService> logger)
     {
         _context = context;
+        _logger = logger;
     }
 
     public async Task<IEnumerable<Client>> GetAllAsync()
     {
-        return await _context.Clients.ToListAsync();
+        return await _context.Clients
+        .Include(c => c.Orders)
+        .ToListAsync();
     }
 
     public async Task<Client?> GetByIdAsync(int id)
     {
-        return await _context.Clients.FirstOrDefaultAsync(c => c.Id == id);
+        _logger.LogInformation("Getting client by id: {Id}", id);
+        return await _context.Clients
+    .Include(c => c.Orders)
+    .FirstOrDefaultAsync(c => c.Id == id);
     }
 
-   public async Task<Client> CreateAsync(CreateClientDto dto)
-{
-    var client = new Client
+    public async Task<Client> CreateAsync(CreateClientDto dto)
     {
-        Name = dto.Name
-    };
+        _logger.LogInformation("Creating client: {Name}", dto.Name);
+        var client = new Client
+        {
+            Name = dto.Name
+        };
 
-    _context.Clients.Add(client);
-    await _context.SaveChangesAsync();
+        _context.Clients.Add(client);
+        await _context.SaveChangesAsync();
 
-    return client;
-}
+        return client;
+    }
 
-public async Task<bool> UpdateAsync(int id, CreateClientDto dto)
-{
-    var client = await _context.Clients.FirstOrDefaultAsync(c => c.Id == id);
+    public async Task<bool> UpdateAsync(int id, CreateClientDto dto)
+    {
+        var client = await _context.Clients.FirstOrDefaultAsync(c => c.Id == id);
 
-    if (client == null)
-        return false;
+        _logger.LogInformation("Updating client id: {Id}", id);
 
-    client.Name = dto.Name;
+        if (client == null)
+            return false;
 
-    await _context.SaveChangesAsync();
+        client.Name = dto.Name;
 
-    return true;
-}
+        await _context.SaveChangesAsync();
 
-public async Task<bool> DeleteAsync(int id)
-{
-    var client = await _context.Clients.FirstOrDefaultAsync(c => c.Id == id);
+        return true;
+    }
 
-    if (client == null)
-        return false;
+    public async Task<bool> DeleteAsync(int id)
+    {
+        _logger.LogInformation("Deleting client id: {Id}", id);
+        var client = await _context.Clients.FirstOrDefaultAsync(c => c.Id == id);
 
-    _context.Clients.Remove(client);
-    await _context.SaveChangesAsync();
+        if (client == null)
+            return false;
 
-    return true;
-}
+        _context.Clients.Remove(client);
+        await _context.SaveChangesAsync();
+
+        return true;
+    }
 }
