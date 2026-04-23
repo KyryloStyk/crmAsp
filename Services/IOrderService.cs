@@ -1,3 +1,4 @@
+using api.DTOs.Order;
 public interface IOrderService
 {
     Task<IEnumerable<Order>> GetAllAsync();

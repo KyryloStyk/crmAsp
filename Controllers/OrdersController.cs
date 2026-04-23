@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
 using api.DTOs.Order;
 
-namespace api.DTOs.Order;
+namespace api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -39,7 +39,6 @@ public class OrdersController : ControllerBase
     public async Task<ActionResult<OrderDto>> Create(CreateOrderDto dto)
     {
         var order = await _orderService.CreateAsync(dto);
-
         var result = _mapper.Map<OrderDto>(order);
 
         return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);

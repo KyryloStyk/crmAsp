@@ -1,4 +1,6 @@
 using AutoMapper;
+using api.DTOs.Client;
+using api.DTOs.Order;
 
 public class ClientProfile : Profile
 {

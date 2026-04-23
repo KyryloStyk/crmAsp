@@ -1,5 +1,4 @@
-
-namespace api.DTOs.Client;
+namespace api.DTOs.Order;
 
 public class CreateOrderDto
 {
