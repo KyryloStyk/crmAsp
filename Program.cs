@@ -7,13 +7,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateClientDtoValidator>();
+builder.Services.AddScoped<IClientService, ClientService>();
 
-// ✅ EF
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite("Data Source=app.db"));
-
-// ✅ сервис теперь Scoped
-builder.Services.AddScoped<ClientService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

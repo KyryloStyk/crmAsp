@@ -1,4 +1,7 @@
-public class ClientService
+using Microsoft.EntityFrameworkCore;
+
+
+public class ClientService : IClientService
 {
     private readonly AppDbContext _context;
 
@@ -7,33 +10,17 @@ public class ClientService
         _context = context;
     }
 
-    public IEnumerable<Client> GetAll()
+    public async Task<IEnumerable<Client>> GetAllAsync()
     {
-        return _context.Clients.ToList();
+        return await _context.Clients.ToListAsync();
     }
 
-    public Client? GetById(int id)
+    public async Task<Client?> GetByIdAsync(int id)
     {
-        return _context.Clients.Find(id);
+        return await _context.Clients.FirstOrDefaultAsync(c => c.Id == id);
     }
 
-    public void AddClient(Client client)
-    {
-        _context.Clients.Add(client);
-        _context.SaveChanges();
-    }
-
-    public void DeleteClient(int id)
-    {
-        var client = _context.Clients.Find(id);
-        if (client != null)
-        {
-            _context.Clients.Remove(client);
-            _context.SaveChanges();
-        }
-    }
-
-    public Client Create(CreateClientDto dto)
+   public async Task<Client> CreateAsync(CreateClientDto dto)
 {
     var client = new Client
     {
@@ -41,32 +28,34 @@ public class ClientService
     };
 
     _context.Clients.Add(client);
-    _context.SaveChanges();
+    await _context.SaveChangesAsync();
 
     return client;
 }
 
-public void UpdateClient(int id, CreateClientDto dto)
+public async Task<bool> UpdateAsync(int id, CreateClientDto dto)
 {
-    var client = _context.Clients.FirstOrDefault(c => c.Id == id);
+    var client = await _context.Clients.FirstOrDefaultAsync(c => c.Id == id);
 
     if (client == null)
-        return;
+        return false;
 
     client.Name = dto.Name;
 
-    _context.SaveChanges();
+    await _context.SaveChangesAsync();
+
+    return true;
 }
 
-public bool Delete(int id)
+public async Task<bool> DeleteAsync(int id)
 {
-    var client = _context.Clients.FirstOrDefault(c => c.Id == id);
+    var client = await _context.Clients.FirstOrDefaultAsync(c => c.Id == id);
 
     if (client == null)
         return false;
 
     _context.Clients.Remove(client);
-    _context.SaveChanges();
+    await _context.SaveChangesAsync();
 
     return true;
 }

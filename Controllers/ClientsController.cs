@@ -5,9 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 [Route("api/[controller]")]
 public class ClientsController : ControllerBase
 {
-    private readonly ClientService _clientService;
+    private readonly IClientService _clientService;
 
-    public ClientsController(ClientService clientService)
+    public ClientsController(IClientService clientService)
     {
         _clientService = clientService;
     }
@@ -19,39 +19,38 @@ public class ClientsController : ControllerBase
     }
 
     [HttpGet]
-public ActionResult<IEnumerable<ClientDto>> GetAll()
+public async Task<ActionResult<IEnumerable<ClientDto>>> GetAll()
 {
-    var clients = _clientService.GetAll()
-        .Select(c => new ClientDto
-        {
-            Id = c.Id,
-            Name = c.Name
-        });
+    var clients = await _clientService.GetAllAsync();
 
-    return Ok(clients);
+    var result = clients.Select(c => new ClientDto
+    {
+        Id = c.Id,
+        Name = c.Name
+    });
+
+    return Ok(result);
 }
 
-    [HttpGet("{id}")]
-public ActionResult<ClientDto> GetById(int id)
+[HttpGet("{id}")]
+public async Task<ActionResult<ClientDto>> GetById(int id)
 {
-    var client = _clientService.GetById(id);
+    var client = await _clientService.GetByIdAsync(id);
 
     if (client == null)
         return NotFound();
 
-    var dto = new ClientDto
+    return Ok(new ClientDto
     {
         Id = client.Id,
         Name = client.Name
-    };
-
-    return Ok(dto);
+    });
 }
 
-    [HttpPost]
-public ActionResult<ClientDto> Create([FromBody] CreateClientDto dto)
+[HttpPost]
+public async Task<ActionResult<ClientDto>> Create(CreateClientDto dto)
 {
-    var client = _clientService.Create(dto);
+    var client = await _clientService.CreateAsync(dto);
 
     var result = new ClientDto
     {
@@ -63,22 +62,20 @@ public ActionResult<ClientDto> Create([FromBody] CreateClientDto dto)
 }
 
 [HttpPut("{id}")]
-public ActionResult UpdateClient(int id, [FromBody] CreateClientDto dto)
+public async Task<ActionResult> Update(int id, CreateClientDto dto)
 {
-    var existing = _clientService.GetById(id);
+    var success = await _clientService.UpdateAsync(id, dto);
 
-    if (existing == null)
+    if (!success)
         return NotFound();
-
-    _clientService.UpdateClient(id, dto);
 
     return NoContent();
 }
 
-    [HttpDelete("{id}")]
-public ActionResult Delete(int id)
+[HttpDelete("{id}")]
+public async Task<ActionResult> Delete(int id)
 {
-    var success = _clientService.Delete(id);
+    var success = await _clientService.DeleteAsync(id);
 
     if (!success)
         return NotFound();
